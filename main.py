@@ -3,16 +3,27 @@
 
 Writes a single original one-line roast of a daily gadget to
 /output/entry.txt (1-200 characters, UTF-8, not only whitespace).
-Standard library only, no network, no input: the line is a plain
-string constant below.
+Standard library only, no network, no input.
+
+The roast is built from two fragments: a setup (the vacuum's proudest
+feature, a year spent mapping the house) and a punch (what it learned
+— the rug is a cliff). ``assemble`` joins them into the single line.
 """
 
-import os
+from pathlib import Path
 
-LINE = "My robot vacuum spent a year mapping my house and still thinks the rug is a cliff."
+SETUP = "My robot vacuum spent a year mapping my house"
+PUNCH = "and still thinks the rug is a cliff."
+
+OUTPUT_PATH = Path("/output/entry.txt")
 
 
-def validate_line(line: str) -> str:
+def assemble(setup: str, punch: str) -> str:
+    """Join the setup and punch fragments into one roast line."""
+    return f"{setup} {punch}"
+
+
+def validate(line: str) -> str:
     """Check the roast meets the entry gate before it is written.
 
     Must be 1-200 characters, UTF-8-encodable, a single line, and
@@ -29,10 +40,9 @@ def validate_line(line: str) -> str:
 
 
 def main() -> None:
-    validate_line(LINE)
-    os.makedirs("/output", exist_ok=True)
-    with open("/output/entry.txt", "w", encoding="utf-8") as f:
-        f.write(LINE)
+    line = validate(assemble(SETUP, PUNCH))
+    OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    OUTPUT_PATH.write_text(line, encoding="utf-8")
 
 
 if __name__ == "__main__":
